@@ -63,19 +63,20 @@ public class JwtAuthenticationController {
     public ResponseEntity<?> loginUser(@RequestBody LoginUserRequest loginUserRequest){
 
         User user = userServiceImpl.findByUsername(loginUserRequest.getUsername());
-        System.out.println(user.toString());
 
-        if (user.getUsername().equals(loginUserRequest.getUsername()) || user!=null
-                && bcryptEncoder.encode(loginUserRequest.getPassword()).equals(user.getPassword())){
+        if (user!=null && user.getUsername().equals(loginUserRequest.getUsername()) ){
+            if (bcryptEncoder.matches(loginUserRequest.getPassword(), user.getPassword())){
+                UserDetails userDetails =customUserDetailsService.loadUserByUsername(loginUserRequest.getUsername());
+                String token = jwtTokenUtil.generateToken(userDetails);
 
-            UserDetails userDetails =customUserDetailsService.loadUserByUsername(loginUserRequest.getUsername());
-            String token = jwtTokenUtil.generateToken(userDetails);
-            System.out.println("JWT-TOKEN  =  "+token);
-
-            UserLoginDto userLoginDto = new UserLoginDto();
-            userLoginDto.setUsername(user.getUsername());
-            userLoginDto.setToken(token);
-            return ResponseEntity.ok(commonService.generateGenericSuccessResponse(userLoginDto));
+                UserLoginDto userLoginDto = new UserLoginDto();
+                userLoginDto.setUsername(user.getUsername());
+                userLoginDto.setToken(token);
+                return ResponseEntity.ok(commonService.generateGenericSuccessResponse(userLoginDto));
+            }
+            else {
+                return ResponseEntity.ok(commonService.generateSuccessResponseWithMessageKey(SuccessEnum.INVALID_PASSWORD.getCode()));
+            }
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

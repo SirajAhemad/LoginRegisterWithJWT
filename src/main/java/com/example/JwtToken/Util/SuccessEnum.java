@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum SuccessEnum {
 
-    USER_REGISTERED("user.registered");
+    USER_REGISTERED("user.registered"),INVALID_PASSWORD("invalid.password");
 
     private String code;
 }

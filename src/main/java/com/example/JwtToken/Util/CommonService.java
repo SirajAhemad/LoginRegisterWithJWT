@@ -18,6 +18,9 @@ public class CommonService {
                 ApplicationResponseConstants.SUCCESS_RESPONSE, object);
 
     }
+    public GenericResponse generateSuccessResponseWithMessageKey(final String code) {
+        return new GenericResponse(ApplicationResponseConstants.SUCCESS_RESPONSE_CODE, getMessageByCode(code));
+    }
 
     public GenericResponse generateSuccessResponseWithMessageKeyAndData(final String message, final Object data) {
         return new GenericResponse(ApplicationResponseConstants.SUCCESS_RESPONSE_CODE, getMessageByCode(message), data);
